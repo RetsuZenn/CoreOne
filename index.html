@@ -1,0 +1,536 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoreOne – All your Daily Essentials</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%230a1628'/><circle cx='50' cy='50' r='35' fill='none' stroke='%2300d4ff' stroke-width='4'/><path d='M35 50 L45 60 L65 40' stroke='%2300d4ff' stroke-width='5' fill='none' stroke-linecap='round'/></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- PARTICLES BACKGROUND -->
+    <div class="particles" id="particles"></div>
+
+    <!-- NOTIFICATION TOAST -->
+    <div class="notification-toast" id="notificationToast">
+        <div class="notif-icon">🔔</div>
+        <div class="notif-content">
+            <h4 id="notifTitle">Task Reminder</h4>
+            <p id="notifMessage">You have a task due!</p>
+        </div>
+        <button class="notif-close" onclick="closeNotification()">✕</button>
+    </div>
+
+    <!-- ALARM OVERLAY -->
+    <div class="alarm-overlay" id="alarmOverlay">
+        <div class="alarm-box">
+            <div class="alarm-icon">⏰</div>
+            <h3>Task Reminder!</h3>
+            <p id="alarmTaskName">Task name here</p>
+            <p id="alarmTaskTime" class="alarm-time"></p>
+            <div class="alarm-actions">
+                <button class="btn-snooze" onclick="snoozeAlarm()">⏰ Snooze 5min</button>
+                <button class="btn-dismiss" onclick="dismissAlarm()">✓ Dismiss</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRMATION MODAL -->
+    <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-box">
+            <div class="confirm-icon">⚠️</div>
+            <h3>Do you want to delete this?</h3>
+            <p>Please confirm. This action cannot be undone.</p>
+            <div class="confirm-buttons">
+                <button class="btn-confirm-no" onclick="cancelDelete()">Cancel</button>
+                <button class="btn-confirm-yes" onclick="confirmDelete()">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APP CONTAINER -->
+    <div class="app-container">
+
+        <!-- ==================== LOGIN PAGE ==================== -->
+        <div class="login-page" id="loginPage">
+            <div class="login-logo">
+                <div class="big-icon">⚡</div>
+                <h1>CoreOne</h1>
+                <p>Daily Essentials</p>
+            </div>
+
+            <div class="login-form">
+                <h2>Welcome Back</h2>
+
+                <div class="form-group">
+                    <label>Email or Username</label>
+                    <input type="text" id="loginEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="loginPassword" placeholder="Enter your password">
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('loginPassword')">👁️</button>
+                    </div>
+                </div>
+
+                <button class="login-btn" onclick="loginWithEmail()">🔐 Sign In</button>
+            </div>
+
+            <div class="login-footer">
+                <p>Don't have an account? <a href="#" onclick="showSignup()">Sign Up</a></p>
+            </div>
+        </div>
+
+        <!-- ==================== SIGNUP PAGE ==================== -->
+        <div class="signup-page" id="signupPage">
+            <div class="login-logo">
+                <div class="big-icon">⚡</div>
+                <h1>CoreOne</h1>
+                <p>Daily Essentials</p>
+            </div>
+            <div class="login-form">
+                <h2>Create Account</h2>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="signupUsername" placeholder="Enter your username">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="signupEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="signupPassword" placeholder="Enter your password">
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('signupPassword')">👁️</button>
+                    </div>
+                </div>
+                <button class="login-btn" onclick="signupWithEmail()">📝 Sign Up</button>
+                <div class="login-footer">
+                    <p>Already have an account? <a href="#" onclick="showLogin()">Sign In</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== MAIN APP ==================== -->
+        <div class="main-content" id="mainContent">
+
+            <!-- HEADER -->
+            <div class="header">
+                <div class="logo-section">
+                    <div class="logo-icon">⚡</div>
+                    <div class="logo-text">
+                        <h1>CoreOne</h1>
+                        <span>Daily Essentials</span>
+                    </div>
+                </div>
+                <div class="user-section" onclick="toggleUserMenu()">
+                    <div class="user-avatar">👤</div>
+                    <span class="user-name" id="displayName">MC LOUIE</span>
+                </div>
+            </div>
+
+            <!-- USER DROPDOWN MENU -->
+            <div class="user-menu" id="userMenu">
+                <div class="user-menu-header">
+                    <div class="user-avatar-lg">👤</div>
+                    <div>
+                        <h4 id="menuUserName">MC LOUIE</h4>
+                        <p id="menuUserEmail">user@email.com</p>
+                    </div>
+                </div>
+                <div class="user-menu-items">
+                    <button onclick="toggleNotifSettings()">🔔 Notification Settings</button>
+                    <button id="adminDashboardBtn" style="display:none;" onclick="switchPage('admin')">🛡️ Admin Dashboard</button>
+                    <button onclick="logout()">🚪 Logout</button>
+                </div>
+            </div>
+
+            <!-- NOTIFICATION SETTINGS PANEL -->
+            <div class="notif-settings-panel" id="notifSettingsPanel">
+                <div class="notif-settings-header">
+                    <h3>🔔 Notification Settings</h3>
+                    <button onclick="toggleNotifSettings()">✕</button>
+                </div>
+                <div class="notif-settings-body">
+                    <div class="notif-option">
+                        <label>
+                            <span>Enable Task Reminders</span>
+                            <input type="checkbox" id="enableReminders" checked onchange="saveNotifSettings()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="notif-option">
+                        <label>
+                            <span>Reminder Sound</span>
+                            <input type="checkbox" id="enableSound" checked onchange="saveNotifSettings()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="notif-option">
+                        <label>
+                            <span>Remind Before (minutes)</span>
+                            <select id="reminderBefore" onchange="saveNotifSettings()">
+                                <option value="0">At exact time</option>
+                                <option value="5" selected>5 minutes before</option>
+                                <option value="10">10 minutes before</option>
+                                <option value="15">15 minutes before</option>
+                                <option value="30">30 minutes before</option>
+                                <option value="60">1 hour before</option>
+                            </select>
+                        </label>
+                    </div>
+                    <button class="test-notif-btn" onclick="testNotification()">🔔 Test Notification</button>
+                </div>
+            </div>
+
+            <!-- ====== HOME PAGE ====== -->
+            <div class="page-section active" id="homePage">
+                <div class="welcome-card">
+                    <h2>Good <span id="greeting">Morning</span>, <span id="welcomeName">MC LOUIE</span> 👋</h2>
+                    <p id="todayDate"></p>
+                </div>
+                <div class="quick-stats">
+                    <div class="stat-card" onclick="switchPage('todo')">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-value" id="totalTasks">0</div>
+                        <div class="stat-label">Total Tasks</div>
+                    </div>
+                    <div class="stat-card" onclick="switchPage('todo')">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value" id="completedTasks">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-card" onclick="switchPage('todo')">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-value" id="pendingTasks">0</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <div class="stat-card" onclick="switchPage('notes')">
+                        <div class="stat-icon">📝</div>
+                        <div class="stat-value" id="totalNotes">0</div>
+                        <div class="stat-label">Notes</div>
+                    </div>
+                </div>
+
+                <div class="upcoming-section">
+                    <h3>⏰ Upcoming Tasks</h3>
+                    <div id="upcomingTasks">
+                        <div class="empty-state-small">No upcoming tasks</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== TO-DO PAGE ====== -->
+            <div class="page-section" id="todoPage">
+                <div class="section-title">
+                    <span class="icon">📋</span>
+                    <h2>To-Do List</h2>
+                </div>
+
+                <div class="todo-header">
+                    <div class="todo-search">
+                        <input type="text" id="todoSearch" placeholder="🔍 Search tasks..." oninput="filterTodos()">
+                    </div>
+                    <button class="add-todo-btn" onclick="toggleTodoForm()">
+                        <span>+</span> Add Task
+                    </button>
+                </div>
+
+                <!-- ADD TODO FORM -->
+                <div class="todo-form" id="todoForm">
+                    <input type="text" id="todoTitle" placeholder="Task title..." maxlength="100">
+                    <textarea id="todoDesc" placeholder="Description (optional)..." maxlength="500"></textarea>
+                    <div class="datetime-row">
+                        <input type="date" id="todoDate">
+                        <input type="time" id="todoTime">
+                    </div>
+                    <select id="todoPriority">
+                        <option value="low">🟢 Low Priority</option>
+                        <option value="medium" selected>🟡 Medium Priority</option>
+                        <option value="high">🔴 High Priority</option>
+                    </select>
+                    <div class="notif-toggle-row">
+                        <label class="notif-toggle-label">
+                            <input type="checkbox" id="todoNotification" checked>
+                            <span>🔔 Enable reminder notification</span>
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button class="cancel-btn" onclick="toggleTodoForm()">Cancel</button>
+                        <button class="save-btn" onclick="saveTodo()">Save Task</button>
+                    </div>
+                </div>
+
+                <!-- FILTERS -->
+                <div class="todo-filters">
+                    <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+                    <button class="filter-btn" onclick="setFilter('pending', this)">Pending</button>
+                    <button class="filter-btn" onclick="setFilter('completed', this)">Completed</button>
+                    <button class="filter-btn" onclick="setFilter('high', this)">🔴 High</button>
+                    <button class="filter-btn" onclick="setFilter('medium', this)">🟡 Medium</button>
+                    <button class="filter-btn" onclick="setFilter('low', this)">🟢 Low</button>
+                </div>
+
+                <!-- SORTING AND BULK ACTIONS -->
+                <div class="todo-actions">
+                    <div class="sort-section">
+                        <label>Sort by:</label>
+                        <select id="sortSelect" onchange="setSort(this.value)">
+                            <option value="created-desc">Newest First</option>
+                            <option value="created-asc">Oldest First</option>
+                            <option value="title-asc">A-Z</option>
+                            <option value="title-desc">Z-A</option>
+                            <option value="priority-desc">High Priority</option>
+                            <option value="priority-asc">Low Priority</option>
+                        </select>
+                    </div>
+                    <div class="bulk-actions">
+                        <button class="select-all-btn" onclick="toggleSelectAll()">Select All</button>
+                        <button class="delete-all-btn" onclick="deleteSelectedTasks()" disabled>Delete Selected</button>
+                    </div>
+                </div>
+
+                <!-- TODO LIST -->
+                <div class="todo-list" id="todoList"></div>
+
+                <!-- PAGINATION -->
+                <div class="pagination" id="todoPagination"></div>
+
+                <!-- EMPTY STATE -->
+                <div class="empty-state" id="todoEmpty">
+                    <div class="empty-icon">📋</div>
+                    <h3>No Tasks Yet</h3>
+                    <p>Tap "Add Task" to create your first to-do!</p>
+                </div>
+            </div>
+
+            <!-- ====== NOTES PAGE ====== -->
+            <div class="page-section" id="notesPage">
+                <div class="section-title">
+                    <span class="icon">📝</span>
+                    <h2>Notes</h2>
+                </div>
+
+                <div class="notes-header">
+                    <div class="notes-search">
+                        <input type="text" id="notesSearch" placeholder="🔍 Search notes..." oninput="filterNotes()">
+                    </div>
+                    <button class="add-todo-btn" onclick="toggleNoteForm()">
+                        <span>+</span> Add Note
+                    </button>
+                </div>
+
+                <!-- ADD NOTE FORM -->
+                <div class="note-form" id="noteForm">
+                    <input type="text" id="noteTitle" placeholder="Note title..." maxlength="100">
+                    <textarea id="noteContent" placeholder="Write your note here..." maxlength="5000" rows="6"></textarea>
+                    <select id="noteColor">
+                        <option value="blue">🔵 Blue</option>
+                        <option value="green">🟢 Green</option>
+                        <option value="purple">🟣 Purple</option>
+                        <option value="orange">🟠 Orange</option>
+                        <option value="pink">🔴 Pink</option>
+                        <option value="teal">🩵 Teal</option>
+                    </select>
+                    <div class="form-actions">
+                        <button class="cancel-btn" onclick="toggleNoteForm()">Cancel</button>
+                        <button class="save-btn" onclick="saveNote()">Save Note</button>
+                    </div>
+                </div>
+
+                <!-- NOTES GRID -->
+                <div class="notes-grid" id="notesGrid"></div>
+
+                <!-- EMPTY STATE -->
+                <div class="empty-state" id="notesEmpty">
+                    <div class="empty-icon">📝</div>
+                    <h3>No Notes Yet</h3>
+                    <p>Tap "Add Note" to create your first note!</p>
+                </div>
+            </div>
+
+            <!-- ====== NOTE VIEW PAGE ====== -->
+            <div class="page-section" id="noteViewPage">
+                <div class="note-view-header">
+                    <button class="back-btn" onclick="switchPage('notes')">← Back</button>
+                    <div class="note-view-actions">
+                        <button class="edit-note-btn" onclick="editCurrentNote()">✏️ Edit</button>
+                        <button class="delete-note-btn" onclick="deleteCurrentNote()">🗑️ Delete</button>
+                    </div>
+                </div>
+                <div class="note-view-content" id="noteViewContent"></div>
+            </div>
+
+            <!-- ====== ADMIN PAGE ====== -->
+            <div class="page-section" id="adminPage">
+                <div class="section-title">
+                    <span class="icon">🛡️</span>
+                    <h2>Admin Dashboard</h2>
+                </div>
+
+                <div class="admin-hero">
+                    <div>
+                        <p class="admin-kicker">System overview</p>
+                        <h3>Manage users, tasks, and notes</h3>
+                        <p id="adminStatus">Signed in as admin.</p>
+                    </div>
+                    <div class="admin-hero-actions">
+                        <button class="back-btn" onclick="switchPage('home')">← Back to App</button>
+                        <button class="test-notif-btn admin-refresh-btn" onclick="loadAdminDashboard()">Refresh</button>
+                    </div>
+                </div>
+
+                <div class="admin-stats-grid" id="adminStatsGrid"></div>
+
+                <div class="admin-section">
+                    <div class="admin-card-header">
+                        <h3>Users</h3>
+                    </div>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Role</th>
+                                    <th>Tasks</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <div class="admin-card-header">
+                        <h3>Tasks</h3>
+                    </div>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Owner</th>
+                                    <th>Task</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminTodosTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <div class="admin-card-header">
+                        <h3>Notes</h3>
+                    </div>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Owner</th>
+                                    <th>Note</th>
+                                    <th>Color</th>
+                                    <th>Updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminNotesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== CALCULATOR PAGE ====== -->
+            <div class="page-section" id="calcPage">
+                <div class="section-title">
+                    <span class="icon">🔢</span>
+                    <h2>Calculator</h2>
+                </div>
+
+                <div class="calculator">
+                    <div class="calc-history" id="calcHistory"></div>
+                    <div class="calc-display">
+                        <div class="calc-expression" id="calcExpression"></div>
+                        <div class="calc-result" id="calcResult">0</div>
+                    </div>
+                    <div class="calc-buttons">
+                        <button class="calc-btn func" onclick="calcClear()">AC</button>
+                        <button class="calc-btn func" onclick="calcBackspace()">⌫</button>
+                        <button class="calc-btn func" onclick="calcToggleSign()">+/-</button>
+                        <button class="calc-btn func" onclick="calcPercent()">%</button>
+
+                        <button class="calc-btn sci" onclick="calcScientific('sin')">sin</button>
+                        <button class="calc-btn sci" onclick="calcScientific('cos')">cos</button>
+                        <button class="calc-btn sci" onclick="calcScientific('tan')">tan</button>
+                        <button class="calc-btn operator" onclick="calcOperator('/')">÷</button>
+
+                        <button class="calc-btn sci" onclick="calcScientific('ln')">ln</button>
+                        <button class="calc-btn sci" onclick="calcScientific('log')">log</button>
+                        <button class="calc-btn sci" onclick="calcScientific('square')">x²</button>
+                        <button class="calc-btn operator" onclick="calcOperator('*')">×</button>
+
+                        <button class="calc-btn sci" onclick="calcScientific('sqrt')">√</button>
+                        <button class="calc-btn sci" onclick="calcConstant('pi')">π</button>
+                        <button class="calc-btn sci" onclick="calcConstant('e')">e</button>
+                        <button class="calc-btn operator" onclick="calcOperator('^')">xʸ</button>
+
+                        <button class="calc-btn" onclick="calcDigit('7')">7</button>
+                        <button class="calc-btn" onclick="calcDigit('8')">8</button>
+                        <button class="calc-btn" onclick="calcDigit('9')">9</button>
+                        <button class="calc-btn operator" onclick="calcOperator('-')">−</button>
+
+                        <button class="calc-btn" onclick="calcDigit('4')">4</button>
+                        <button class="calc-btn" onclick="calcDigit('5')">5</button>
+                        <button class="calc-btn" onclick="calcDigit('6')">6</button>
+                        <button class="calc-btn operator" onclick="calcOperator('+')">+</button>
+
+                        <button class="calc-btn" onclick="calcDigit('1')">1</button>
+                        <button class="calc-btn" onclick="calcDigit('2')">2</button>
+                        <button class="calc-btn" onclick="calcDigit('3')">3</button>
+                        <button class="calc-btn equals" onclick="calcEquals()">=</button>
+
+                        <button class="calc-btn zero" onclick="calcDigit('0')">0</button>
+                        <button class="calc-btn" onclick="calcDecimal()">.</button>
+                        <button class="calc-btn sci" onclick="calcScientific('inverse')">1/x</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== BOTTOM NAVIGATION ====== -->
+        <nav class="bottom-nav" id="bottomNav">
+            <button class="nav-item active" onclick="switchPage('home')" data-page="home">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Home</span>
+            </button>
+            <button class="nav-item" onclick="switchPage('todo')" data-page="todo">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">To-Do</span>
+                <span class="nav-badge" id="todoBadge" style="display:none;">0</span>
+            </button>
+            <button class="nav-item" onclick="switchPage('notes')" data-page="notes">
+                <span class="nav-icon">📝</span>
+                <span class="nav-label">Notes</span>
+            </button>
+            <button class="nav-item" onclick="switchPage('calc')" data-page="calc">
+                <span class="nav-icon">🔢</span>
+                <span class="nav-label">Calc</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- AUDIO FOR NOTIFICATION -->
+    <audio id="notifSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgipausJFnOTRejpissZFqOjVcj5iqsJJsPDVbkJeor5765NnQx8C4sq2lo56amJeWlZWVlpeYmpueoquwuL/J0Nri6u/19/n5+fj39PLu6eTd1s7GvbWuqKOenJmXlZWVlZaXmJudoaeut77I0drj7PL29/n5+fj28+/q5N3Wzsa9ta6oo56cmpd=" type="audio/wav">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
